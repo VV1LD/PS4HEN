@@ -19,5 +19,5 @@ to run, do as follows in your terminal:
 
 To Do:
 
-	make and automation script to do the above for you lol
+	make an automation script to do the above for you lol
 	
