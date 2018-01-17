@@ -1,5 +1,5 @@
 # PS4HEN
-PS4 Homebrew ENabler for version 4.05 based on Flatz writeup and using IDC's fake codebase
+PS4 Homebrew ENabler for version 4.05 based on Flatz writeup and using IDC's codebase
 
 You can find his codebase here https://github.com/idc/ps4-fake-405
 aswell as his method to patch shellcore here https://github.com/idc/ps4-experiments-405
