@@ -1,0 +1,5 @@
+build/
+FTPS4
+*.bin
+*.sh
+temp.*

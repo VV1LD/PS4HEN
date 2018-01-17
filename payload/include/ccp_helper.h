@@ -1,0 +1,40 @@
+#ifndef __CCP_HELPER_H
+#define __CCP_HELPER_H
+
+
+#define CCP_MAX_PAYLOAD_SIZE 0x88
+#define CCP_OP(cmd) (cmd >> 24)
+#define CCP_OP_XTS 2
+#define CCP_OP_HMAC 9
+#define CCP_USE_KEY_HANDLE (1 << 20)
+
+struct ccp_link {
+	void* p;
+};
+
+union ccp_op {
+	struct {
+		uint32_t cmd;
+		uint32_t status;
+	} common;
+	uint8_t buf[CCP_MAX_PAYLOAD_SIZE];
+};
+
+struct ccp_msg {
+	union ccp_op op;
+	uint32_t index;
+	uint32_t result;
+	TAILQ_ENTRY(ccp_msg) next;
+	uint64_t message_id;
+	LIST_ENTRY(ccp_link) links;
+};
+
+struct ccp_req {
+	TAILQ_HEAD(, ccp_msg) msgs;
+	void (*cb)(void* arg, int result);
+	void* arg;
+	uint64_t message_id;
+	LIST_ENTRY(ccp_link) links;
+};
+
+#endif
