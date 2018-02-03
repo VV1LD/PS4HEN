@@ -123,8 +123,6 @@ struct real_info real_infos[] PAYLOAD_DATA =
   { 0x2370058, &sbl_keymgr_key_rbtree },
   { 0x235C6C0, &fpu_ctx },
   { 0x1E82A0, &real_RsaesPkcs1v15Dec2048CRT },
-  { 0x62EB40, &npdrm_decrypt_rif_new },
-
 
   { 0, NULL },
 };
