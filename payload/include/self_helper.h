@@ -35,6 +35,8 @@ TYPE_BEGIN(struct self_context, SIZEOF_SELF_CONTEXT);
   TYPE_FIELD(struct mtx lock, 0x40);
 TYPE_END();
 
+
+
 #define SIZEOF_SELF_HEADER 0x20
 
 TYPE_BEGIN(struct self_header, SIZEOF_SELF_HEADER);

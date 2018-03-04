@@ -110,6 +110,7 @@ PAYLOAD_CODE static inline int is_fake_self(struct self_context* ctx)
 
 PAYLOAD_CODE static inline int sceSblAuthMgrGetElfHeader(struct self_context* ctx, struct elf64_ehdr** ehdr)
 {
+
   struct self_header* self_hdr;
   struct elf64_ehdr* elf_hdr;
   size_t pdata_size;
@@ -141,6 +142,7 @@ PAYLOAD_CODE static inline int sceSblAuthMgrGetElfHeader(struct self_context* ct
   return -35;
 }
 
+
 static const uint8_t s_auth_info_for_exec[] PAYLOAD_RDATA =
 {
   0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0x00, 0x00, 0x00, 0x80, 0x03, 0x00, 0x20,
@@ -167,8 +169,13 @@ static const uint8_t s_auth_info_for_dynlib[] PAYLOAD_RDATA =
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+
+
+
+
 PAYLOAD_CODE static int build_self_auth_info_fake(struct self_context* ctx, struct self_auth_info* parent_auth_info, struct self_auth_info* auth_info)
 {
+
   struct self_auth_info fake_auth_info;
   struct self_ex_info* ex_info;
   struct elf64_ehdr* ehdr = NULL;
@@ -248,6 +255,7 @@ error:
 
 PAYLOAD_CODE int my_sceSblAuthMgrIsLoadable2(struct self_context* ctx, struct self_auth_info* old_auth_info, int path_id, struct self_auth_info* new_auth_info)
 {
+
   if (ctx->format == SELF_FORMAT_ELF || is_fake_self(ctx))
   {
     return build_self_auth_info_fake(ctx, old_auth_info, new_auth_info);
@@ -260,6 +268,7 @@ PAYLOAD_CODE int my_sceSblAuthMgrIsLoadable2(struct self_context* ctx, struct se
 
 static inline int auth_self_header(struct self_context* ctx)
 {
+
   struct self_header* hdr;
   unsigned int old_total_header_size, new_total_header_size;
   int old_format;
@@ -324,7 +333,7 @@ PAYLOAD_CODE int my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox(unsigne
   /* getting a stack frame of a parent function */
   uint8_t* frame = (uint8_t*)__builtin_frame_address(1);
   /* finding a pointer to a context's structure */
-  struct self_context* ctx = *(struct self_context**)(frame - 0x110);
+  struct self_context* ctx = *(struct self_context**)(frame - 0x100);
   int is_unsigned = ctx && is_fake_self(ctx);
   if (is_unsigned)
   {
@@ -336,8 +345,9 @@ PAYLOAD_CODE int my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox(unsigne
 
 PAYLOAD_CODE int my_sceSblAuthMgrSmLoadSelfBlock__sceSblServiceMailbox(unsigned long service_id, uint8_t* request, void* response)
 {
+
   struct self_context* ctx;
-  register struct self_context* ctx_reg __asm__("r12");
+  register struct self_context* ctx_reg __asm__("r14");
   vm_offset_t segment_data_gpu_va = *(unsigned long*)(request + 0x08);
   vm_offset_t cur_data_gpu_va = *(unsigned long*)(request + 0x50);
   vm_offset_t cur_data2_gpu_va = *(unsigned long*)(request + 0x58);

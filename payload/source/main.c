@@ -88,41 +88,41 @@ struct disp_info
 
 struct real_info real_infos[] PAYLOAD_DATA =
 {
-  { 0x1D1700, &real_malloc },
-  { 0x1D18D0, &real_free },
-  { 0x286CF0, &real_memcpy },
-  { 0x29cd10, &real_memcmp },
-  { 0x347580, &real_printf },
-  { 0x1ECB10, &real_memset },
+	{ 0x3f7750, &real_malloc }, 
+  { 0x3F7930, &real_free },
+  { 0x14a6b0, &real_memcpy },
+  { 0x242A60, &real_memcmp },
+  { 0x17F30,  &real_printf },
+  { 0x302BD0, &real_memset },
 
 
-  { 0x27AC20, &real_sx_xlock },
-  { 0x27ADB0, &real_sx_xunlock },
-  { 0x3369b0, &real_Sha256Hmac },
-  { 0x19d880, &real_AesCbcCfb128Decrypt },
-  { 0x27AB60, &real_sx_destroy },
+  { 0x38FA30, &real_sx_xlock },
+  { 0x38FBC0, &real_sx_xunlock },
+  { 0x2D5C50, &real_Sha256Hmac },
+  { 0x17A6F0, &real_AesCbcCfb128Decrypt },
+  { 0x38F970, &real_sx_destroy },
  
 
-  { 0x5f79b0, &real_sceSblServiceCryptAsync },
-  { 0x606F40, &real_sceSblServiceMailbox },
-  { 0x39a120, &real_fpu_kern_enter },
-  { 0x39a220, &real_fpu_kern_leave },
-  { 0X27AAF0, &real_sx_init_flags },
-  { 0x4591B0, &real_eventhandler_register },
+  { 0x60CA10, &real_sceSblServiceCryptAsync },
+  { 0x6146C0, &real_sceSblServiceMailbox },
+  { 0x59580,  &real_fpu_kern_enter },
+  { 0x59680,  &real_fpu_kern_leave },
+  { 0x38F900, &real_sx_init_flags },
+  { 0x3C97F0, &real_eventhandler_register },
 
-  { 0x600640, &real_sceSblPfsSetKey },
-  { 0x5FF500, &real_sceSblKeymgrSmCallfunc },
-  { 0x614A80, &real_sceSblAuthMgrIsLoadable2 },
-  { 0x614AE0, &real_sceSblAuthMgrVerifyHeader },
-  { 0x615360, &real_sceSblAuthMgrGetSelfInfo },
-  { 0x6153F0, &real_sceSblAuthMgrSmStart },
-  { 0x5ffe80, &real_sceSblPfsKeymgrGenEKpfsForGDGPAC },
-  { 0x134B730, &M_TEMP },
-  { 0x136B3E8, &mini_syscore_self_binary },
-  { 0x234ED68, &sbl_driver_mapped_pages },
-  { 0x2370058, &sbl_keymgr_key_rbtree },
-  { 0x235C6C0, &fpu_ctx },
-  { 0x1E82A0, &real_RsaesPkcs1v15Dec2048CRT },
+  { 0x606E00, &real_sceSblPfsSetKey },
+  { 0x60E680, &real_sceSblKeymgrSmCallfunc },
+  { 0x625C50, &real_sceSblAuthMgrIsLoadable2 },
+  { 0x625CB0, &real_sceSblAuthMgrVerifyHeader },
+  { 0x626490, &real_sceSblAuthMgrGetSelfInfo },
+  { 0x622020, &real_sceSblAuthMgrSmStart },
+  { 0x60F000, &real_sceSblPfsKeymgrGenEKpfsForGDGPAC },
+  { 0x1993B30, &M_TEMP },
+  { 0x1471468, &mini_syscore_self_binary },
+  { 0x2519DD0, &sbl_driver_mapped_pages },
+  { 0x2534DE0, &sbl_keymgr_key_rbtree },
+  { 0x251CCC0, &fpu_ctx },
+  { 0x3EF200, &real_RsaesPkcs1v15Dec2048CRT },
 
   { 0, NULL },
 };
@@ -133,18 +133,18 @@ struct real_info real_infos[] PAYLOAD_DATA =
 struct cave_info cave_infos[] PAYLOAD_DATA =
 {
   // Fself hooks
-  { ADJACENT(0x6116F1), &my_sceSblAuthMgrIsLoadable2 },
-  { ADJACENT(0x612EA1), &my_sceSblAuthMgrVerifyHeader },
-  { ADJACENT(0x617A32), &my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox },
-  { ADJACENT(0x617B80), &my_sceSblAuthMgrSmLoadSelfBlock__sceSblServiceMailbox },
+  { ADJACENT(0x60C610), &my_sceSblAuthMgrIsLoadable2 },
+  { ADJACENT(0x61A861), &my_sceSblAuthMgrVerifyHeader },
+  { ADJACENT(0x622540), &my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox },
+  { ADJACENT(0x626791), &my_sceSblAuthMgrSmLoadSelfBlock__sceSblServiceMailbox },
 
 
   // Fpkg hooks
-  { ADJACENT(0x641c92), &my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif },
-  { ADJACENT(0x6A4EB0), &my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new },
-  { ADJACENT(0x6439b1), &my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl },
-  { ADJACENT(0x6439C1), &my_sceSblPfsSetKey_pfs_sbl_init },
-  { ADJACENT(0x643D21), &my_sceSblServiceCryptAsync_pfs_crypto },
+  { ADJACENT(0x62CF10), &my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif },
+  { ADJACENT(0x64D731), &my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new },
+  { ADJACENT(0x64D381), &my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl },
+  { ADJACENT(0x6953A1), &my_sceSblPfsSetKey_pfs_sbl_init },
+  { ADJACENT(0x6AD171), &my_sceSblServiceCryptAsync_pfs_crypto },
 
   { 0, 0, NULL },
 };
@@ -155,33 +155,33 @@ struct disp_info disp_infos[] PAYLOAD_DATA =
 {
   // Fself
   //hooks     //caves
-  { 0x6119B5, 0x6116F1 }, // my_sceSblAuthMgrIsLoadable2
+  { 0x61F24F, 0x60C610 }, // my_sceSblAuthMgrIsLoadable2
 
-  { 0x612149, 0x612EA1 }, // my_sceSblAuthMgrVerifyHeader
-  { 0x612D81, 0x612EA1 }, // my_sceSblAuthMgrVerifyHeader
+  { 0x61F976, 0x61A861 }, // my_sceSblAuthMgrVerifyHeader
+  { 0x620599, 0x61A861 }, // my_sceSblAuthMgrVerifyHeader
 
-  { 0x616A6D, 0x617A32 }, // my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox
+  { 0x6238BA, 0x622540 }, // my_sceSblAuthMgrSmLoadSelfSegment__sceSblServiceMailbox
 
-  { 0x6176C4, 0x617B80 }, // my_sceSblAuthMgrSmLoadSelfBlock__sceSblServiceMailbox
+  { 0x6244E1, 0x626791 }, // my_sceSblAuthMgrSmLoadSelfBlock__sceSblServiceMailbox
 
   // Fpkg 
-  { 0x61fdb0, 0x641c92 },// my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif
+  { 0x62DF00, 0x62CF10 },// my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif
 
-  { 0x6202FF, 0x6A4EB0 },// my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new
+  { 0x62ECDE, 0x64D731 },// my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new
 
-  { 0x600885, 0x6439b1 },//my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl 
-  { 0x600921, 0x6439b1 },//my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl
+  { 0x607045, 0x64D381 },//my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl 
+  { 0x6070E1, 0x64D381 },//my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl
 
-  { 0x68cfea, 0x6439C1 },//my_sceSblPfsSetKey_pfs_sbl_init
-  { 0x68d078, 0x6439C1 },//my_sceSblPfsSetKey_pfs_sbl_init
+  { 0x69DB4A, 0x6953A1 },//my_sceSblPfsSetKey_pfs_sbl_init
+  { 0x69DBD8, 0x6953A1 },//my_sceSblPfsSetKey_pfs_sbl_init
 
-  { 0x68d284, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68d71c, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68d974, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68dced, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68e11e, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68e3b9, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
-  { 0x68e702, 0x643D21 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69DDE4, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69E28C, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69E4E8, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69E85D, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69EC7E, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69EF0D, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
+  { 0x69F252, 0x6AD171 },//my_sceSblServiceCryptAsync_pfs_crypto
 
   { 0, 0 },
 };
@@ -191,11 +191,13 @@ PAYLOAD_CODE void my_entrypoint()
 {
   	// initialization, etc
 
+	real_printf("entry 1\n");
 	real_memset(s_fake_keys, 0, sizeof(s_fake_keys));
-
+	real_printf("entry 2\n");
 	real_sx_init_flags(&s_fake_keys_lock, "fake_keys_lock", 0);
-
+	real_printf("entry 3\n");
  	real_eventhandler_register(NULL, "shutdown_pre_sync", &debug_pfs_cleanup, NULL, 0);
+	real_printf("entry done\n");
 }
 
 struct

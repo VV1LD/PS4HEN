@@ -53,6 +53,7 @@ struct sx s_fake_keys_lock PAYLOAD_DATA;
 
 
 PAYLOAD_CODE static struct fake_key_desc* get_free_fake_key_slot(void) {
+
 	struct fake_key_desc* slot = NULL;
 	size_t i;
 
@@ -76,6 +77,7 @@ PAYLOAD_CODE static struct fake_key_desc* get_free_fake_key_slot(void) {
 
 
 PAYLOAD_CODE static inline struct sbl_key_rbtree_entry* sceSblKeymgrGetKey(unsigned int handle) {
+
 struct sbl_key_rbtree_entry* entry = *sbl_keymgr_key_rbtree;
 
 
@@ -94,6 +96,7 @@ struct sbl_key_rbtree_entry* entry = *sbl_keymgr_key_rbtree;
 
 
 PAYLOAD_CODE static struct fake_key_desc* is_fake_pfs_key(uint8_t* key) {
+
 	struct fake_key_desc* slot = NULL;
 	size_t i;
 
@@ -156,7 +159,6 @@ PAYLOAD_CODE inline void pfs_generate_enc_key(uint8_t* ekpfs, uint8_t seed[PFS_S
 PAYLOAD_CODE inline void pfs_generate_sign_key(uint8_t* ekpfs, uint8_t seed[PFS_SEED_SIZE], uint8_t key[PFS_FINAL_KEY_SIZE]) {
 
 	pfs_gen_crypto_key(ekpfs, seed, 2, key);
-
 }
 
 PAYLOAD_CODE inline int my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl(struct pfs_key_blob* blob) {
@@ -231,6 +233,7 @@ PAYLOAD_CODE inline int my_sceSblPfsKeymgrGenEKpfsForGDGPAC_sceSblPfsKeymgrIoctl
 }
 
 PAYLOAD_CODE int my_sceSblPfsSetKey_pfs_sbl_init(unsigned int* ekh, unsigned int* skh, uint8_t* key, uint8_t* iv, int mode, int unused, uint8_t disc_flag) {
+
 	struct sbl_key_rbtree_entry* key_entry;
 	int is_fake_key;
 	int ret;
@@ -260,35 +263,27 @@ PAYLOAD_CODE int my_sceSblPfsSetKey_pfs_sbl_init(unsigned int* ekh, unsigned int
 }
 
 PAYLOAD_CODE inline int npdrm_decrypt_debug_rif(unsigned int type, uint8_t* data) {
-	//real_printf("npdrm_decrypt_debug_rif entered\n\n");
-
-
 
 	struct thread* td = curthread();
 
 	int ret;
 
-
-
-
 	real_fpu_kern_enter(td, fpu_ctx,0);
 	{
-
-
 		// decrypt fake rif manually using a key from publishing tools 
 		ret = real_AesCbcCfb128Decrypt(data + RIF_DIGEST_SIZE, data + RIF_DIGEST_SIZE, RIF_DATA_SIZE, rif_debug_key, sizeof(rif_debug_key) * 8, data);
-		//real_printf("npdrm_decrypt_debug_rif trying to decrypt fake rif\n\n");
+
 		if (ret)
 			ret = SCE_SBL_ERROR_NPDRM_ENOTSUP;
 	}
 	real_fpu_kern_leave(td, fpu_ctx);
 
-	//real_printf("npdrm_decrypt_debug_rif exiting with ret:%d\n\n",ret);
 	return ret;
 }
 
 PAYLOAD_CODE static inline const struct sbl_map_list_entry* sceSblDriverFindMappedPageListByGpuVa(vm_offset_t gpu_va)
 {
+
   const struct sbl_map_list_entry* entry;
   if (!gpu_va)
   {
@@ -309,6 +304,7 @@ PAYLOAD_CODE static inline const struct sbl_map_list_entry* sceSblDriverFindMapp
 
 PAYLOAD_CODE static inline vm_offset_t sceSblDriverGpuVaToCpuVa(vm_offset_t gpu_va, size_t* num_page_groups)
 {
+
   const struct sbl_map_list_entry* entry = sceSblDriverFindMappedPageListByGpuVa(gpu_va);
   if (!entry)
   {
@@ -325,20 +321,20 @@ PAYLOAD_CODE static inline vm_offset_t sceSblDriverGpuVaToCpuVa(vm_offset_t gpu_
 PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new(union keymgr_payload* payload) {
 	uint64_t buf_gpu_va = (uint64_t)payload->mapped_buf;
 
-	/* it's SM request, thus we have the GPU address here, so we need to convert it to the CPU address */
+	// it's SM request, thus we have the GPU address here, so we need to convert it to the CPU address 
 	union keymgr_request* request = (union keymgr_request*)sceSblDriverGpuVaToCpuVa(buf_gpu_va, NULL);
 	union keymgr_response* response = (union keymgr_response*)request;
 	struct ekc* eekc;
 	int orig_ret, ret;
 
-	/* try to decrypt rif normally */
+	// try to decrypt rif normally 
 	ret = orig_ret = real_sceSblKeymgrSmCallfunc(payload);
 
 
-	/* and if it fails then we check if it's fake rif and try to decrypt it by ourselves */
+	// and if it fails then we check if it's fake rif and try to decrypt it by ourselves
 	if ((ret != 0 || payload->status != 0) && request) {
-		//if (BE16(request->decrypt_entire_rif.rif.format) != 0x200) { /* not fake? */
-		if (request->decrypt_entire_rif.rif.format != 2) { /* not fake? */
+		//if (BE16(request->decrypt_entire_rif.rif.format) != 0x200) { // not fake? 
+		if (request->decrypt_entire_rif.rif.format != 2) { // not fake? 
 			ret = orig_ret;
 			goto err;
 		}
@@ -350,8 +346,8 @@ PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_rif_new(union keymgr_pa
 			goto err;
 		}
 
-		/* XXX: sorry, i'm lazy to refactor this crappy code :D basically, we're copying decrypted data to proper place,
-		   consult with kernel code if offsets needs to be changed */
+		// XXX: sorry, i'm lazy to refactor this crappy code :D basically, we're copying decrypted data to proper place,
+		 //  consult with kernel code if offsets needs to be changed 
 		real_memcpy(response->decrypt_entire_rif.raw, request->decrypt_entire_rif.rif.digest, sizeof(request->decrypt_entire_rif.rif.digest) + sizeof(request->decrypt_entire_rif.rif.data));
 
 
@@ -374,7 +370,7 @@ err:
 
 
 PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif(union keymgr_payload* payload) {
-	//real_printf("my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif entered\n\n");
+
 	// it's SM request, thus we have the GPU address here, so we need to convert it to the CPU address
 	union keymgr_request* request = (union keymgr_request*)sceSblDriverGpuVaToCpuVa(payload->mapped_buf, NULL);
 	int ret;
@@ -397,6 +393,7 @@ PAYLOAD_CODE int my_sceSblKeymgrSmCallfunc_npdrm_decrypt_isolated_rif(union keym
 }
 
 PAYLOAD_CODE int ccp_msg_populate_key(unsigned int key_handle, uint8_t* key, int reverse) {
+
 	struct sbl_key_rbtree_entry* key_entry;
 	uint8_t* in_key;
 	int i;
@@ -465,6 +462,7 @@ skip:
 }
 
 PAYLOAD_CODE int my_sceSblServiceCryptAsync_pfs_crypto(struct ccp_req* request) {
+
 	struct ccp_msg* msg;
 	int ret;
 

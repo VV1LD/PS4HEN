@@ -5,6 +5,7 @@
 //#define DEBUG_SOCKET
 #include "defines.h"
 
+
 int find_process(const char* target)
 {
   int pid;
@@ -96,7 +97,7 @@ int get_code_info(int pid, uint64_t* paddress, uint64_t* psize, uint64_t known_s
     uint64_t code_size = end_addr - start_addr;
     uint32_t prot = *(uint32_t*)(&entry[0x38]);
 
-   // printfsocket("%d %llx %llx (%llu) %x\n", type, start_addr, end_addr, code_size, prot);
+    //printfsocket("%d %llx %llx (%llu) %x\n", type, start_addr, end_addr, code_size, prot);
 
     if (type == 255 && prot == 5 && code_size == known_size)
     {
@@ -125,21 +126,24 @@ patch_info;
 
 int apply_patches(int pid, uint64_t known_size, patch_info* patches)
 {
+  //printfsocket("Entered apply patchs...\n");
   uint64_t code_address, code_size;
   int result = get_code_info(pid, &code_address, &code_size, known_size);
   if (result < 0)
   {
-   // printfsocket("Failed to get code info for %d: %d\n", pid, result);
+    //printfsocket("Failed to get code info for %d: %d\n", pid, result);
     return -1;
   }
 
+  //printfsocket("Running sprintf...\n");
   char proc_path[64];
   sprintf(proc_path, "/mnt/proc/%d/mem", pid);
 
+  //printfsocket("After sprintf...\n");
   int fd = open(proc_path, O_RDWR, 0);
   if (fd < 0)
   {
-   // printfsocket("Failed to open %s!\n", proc_path);
+    //printfsocket("Failed to open %s!\n", proc_path);
     return -2;
   }
 
@@ -187,29 +191,41 @@ patch_info shellcore_patches[32] =
 {
 
   // flatz patchs for debug pkg installing :)
-  { "debug pkg patch 1",                    0x11a0db, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg patch 2",                    0x66ea3b, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg patch 3",                    0x7f554b, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg patch 4",                    0x11a107, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg patch 5",                    0x66ea67, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg patch 6",                    0x7f5577, "\x31\xC0\x90\x90\x90", 5 },
-  { "debug pkg free string patch",                    0xc980ee, "free\x00", 5 },
+  { "debug pkg patch 1",                    0x1486BB, "\x31\xC0\x90\x90\x90", 5 },
+  { "debug pkg patch 2",                    0x6E523B, "\x31\xC0\x90\x90\x90", 5 },
+  { "debug pkg patch 3",                    0x852C6B, "\x31\xC0\x90\x90\x90", 5 },
 
-  { NULL, 0, NULL, 0 },
+  { "debug pkg patch 4",                    0x1486E7, "\x31\xC0\x90\x90\x90", 5 },
+  { "debug pkg patch 5",                    0x6E5267, "\x31\xC0\x90\x90\x90", 5 },
+  { "debug pkg patch 6",                    0x852C97, "\x31\xC0\x90\x90\x90", 5 },
+  { "debug pkg free string patch",          0xD40F28 , "free\x00", 4 },
+
+
+
+  { NULL, 0, NULL, 0 }
 };
+
+
 
 
 void do_patch()
 {
+
+	// Init and resolve libraries
+	initKernel();
+	initLibc();
+	initNetwork();
+	initPthread();
+
   int result;
 
   int shell_pid = find_process("SceShellCore");
   if (shell_pid < 0)
   {
-    //printfsocket("Failed to find SceShellCore: %d\n", shell_pid);
+   // printfsocket("Failed to find SceShellCore: %d\n", shell_pid);
     return;
   }
-  ///printfsocket("Found SceShellCore at pid %d!\n", shell_pid);
+  //printfsocket("Found SceShellCore at pid %d!\n", shell_pid);
 
   /*
   int sys_pid = find_process("SceSysCore");
@@ -227,8 +243,10 @@ void do_patch()
     return;
   }
 
-  //printfsocket("Patching SceShellCore...\n");
-  apply_patches(shell_pid, 0xF18000, shellcore_patches);
+ // printfsocket("Patching SceShellCore...\n");
+  apply_patches(shell_pid, 0xFEC000, shellcore_patches);
+ // printfsocket("after patchs...\n");
   //printfsocket("Patching SceSysCore...\n");
   //apply_patches(sys_pid, 0xC4000, syscore_patches);
+
 }

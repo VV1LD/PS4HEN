@@ -80,12 +80,12 @@ int syscall_install_payload(void* td, struct syscall_install_payload_args* args)
   void (*kernel_printf)(const char* fmt, ...);
   vm_offset_t (*kmem_alloc)(vm_map_t map, vm_size_t size);
 
-  uint8_t* kernel_base = (uint8_t*)(__readmsr(0xC0000082) - 0x30EB30);
+  uint8_t* kernel_base = (uint8_t*)(__readmsr(0xC0000082) - 0x3095d0);
 
-  *(void**)(&kernel_printf) = &kernel_base[0x347580];
-  *(void**)(&kernel_memcpy) = &kernel_base[0x286CF0];
-  *(void**)(&kmem_alloc) = &kernel_base[0x369500];
-  vm_map_t kernel_map = *(void**)&kernel_base[0x1FE71B8];
+  *(void**)(&kernel_printf) = &kernel_base[0x17F30];
+  *(void**)(&kernel_memcpy) = &kernel_base[0x14A6B0];
+  *(void**)(&kmem_alloc) = &kernel_base[0x16ECD0];
+  vm_map_t kernel_map = *(void**)&kernel_base[0x1B31218];
 
   kernel_printf("\n\n\n\npayload_installer: starting\n");
   kernel_printf("payload_installer: kernel base=%lx\n", kernel_base);
@@ -113,8 +113,8 @@ int syscall_install_payload(void* td, struct syscall_install_payload_args* args)
   // TODO(idc): clone kmem_alloc instead of patching directly
   cr0 = readCr0();
   writeCr0(cr0 & ~X86_CR0_WP);
-  kernel_base[0x36958D] = 7;
-  kernel_base[0x3695A5] = 7;
+  kernel_base[0x16ed8c] = 7; 
+  kernel_base[0x16eda2] = 7; 
   writeCr0(cr0);
 
   kernel_printf("payload_installer: kmem_alloc\n");
@@ -128,8 +128,8 @@ int syscall_install_payload(void* td, struct syscall_install_payload_args* args)
   // TODO(idc): clone kmem_alloc instead of patching directly
   cr0 = readCr0();
   writeCr0(cr0 & ~X86_CR0_WP);
-  kernel_base[0x36958D] = 3;
-  kernel_base[0x3695A5] = 3;
+  kernel_base[0x16ed8c] = 3; 
+  kernel_base[0x16eda2] = 3; 
   writeCr0(cr0);
 
   kernel_printf("payload_installer: installing...\n");
@@ -332,16 +332,16 @@ int kpayload(struct thread *td){
 	fd = td->td_proc->p_fd;
 	cred = td->td_proc->p_ucred;
 
-	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-0x30EB30];
+	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-0x3095D0];
 	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
-	void** got_prison0 =   (void**)&kernel_ptr[0xF26010];
-	void** got_rootvnode = (void**)&kernel_ptr[0x206D250];
+	void** got_prison0 =   (void**)&kernel_ptr[0x10399B0];
+	void** got_rootvnode = (void**)&kernel_ptr[0x21AFA30];
 
 	// resolve kernel functions
 
-	int (*copyout)(const void *kaddr, void *uaddr, size_t len) = (void *)(kernel_base + 0x286d70);
-	int (*printfkernel)(const char *fmt, ...) = (void *)(kernel_base + 0x347580);
-	void* (*kmalloc)(size_t size) = (void *)(kernel_base + 0x1D1700);
+	int (*copyout)(const void *kaddr, void *uaddr, size_t len) = (void *)(kernel_base + 0x14A7B0);
+	int (*printfkernel)(const char *fmt, ...) = (void *)(kernel_base + 0x17F30);
+	void* (*kmalloc)(size_t size) = (void *)(kernel_base + 0x3F7750);
 
 	cred->cr_uid = 0;
 	cred->cr_ruid = 0;
@@ -360,56 +360,45 @@ int kpayload(struct thread *td){
 	
 	// sceSblACMgrGetDeviceAccessType
 	uint64_t *sceProcType = (uint64_t *)(((char *)td_ucred) + 88);
-	*sceProcType = 0x3801000000000013; // Max access
+	*sceProcType = 0x3800000000000013; 
 	
 	// sceSblACMgrHasSceProcessCapability
 	uint64_t *sceProcCap = (uint64_t *)(((char *)td_ucred) + 104);
 	*sceProcCap = 0xffffffffffffffff; // Sce Process
 
-	uint16_t *securityFlags = (uint64_t *)(kernel_base+0x2001516);
-	*securityFlags = *securityFlags & ~(1 << 15);
-
-	// specters debug settings patchs
-
-	*(char *)(kernel_base + 0x186b0a0) = 0; 
-	*(char *)(kernel_base + 0x2001516) |= 0x14;
-	*(char *)(kernel_base + 0x2001539) |= 1;
-	*(char *)(kernel_base + 0x2001539) |= 2;
-	*(char *)(kernel_base + 0x200153A) |= 1;
-	*(char *)(kernel_base + 0x2001558) |= 1;	
-
 	// Disable write protection
-
 	uint64_t cr0 = readCr0();
 	writeCr0(cr0 & ~X86_CR0_WP);
 
-	// debug menu full patches thanks to sealab
+	// enable uart :)
+	*(char *)(kernel_base + 0x1997BC8) = 0; 
 
-	*(uint32_t *)(kernel_base + 0x4CECB7) = 0;
-	*(uint32_t *)(kernel_base + 0x4CFB9B) = 0;
+	// specters debug settings patchs
 
-	// Target ID Patches :)
+	*(char *)(kernel_base + 0x1B6D086) |= 0x14;
+	*(char *)(kernel_base + 0x1B6D0A9) |= 0x3;
+	*(char *)(kernel_base + 0x1B6D0AA) |= 0x1;
+	*(char *)(kernel_base + 0x1B6D0C8) |= 0x1;
 
-	*(uint16_t *)(kernel_base + 0x1FE59E4) = 0x8101;
-	*(uint16_t *)(kernel_base + 0X1FE5A2C) = 0x8101;
-	*(uint16_t *)(kernel_base + 0x200151C) = 0x8101;
+	// debug menu full patches
+	*(uint32_t *)(kernel_base + 0x4D70F7) = 0;
+	*(uint32_t *)(kernel_base + 0x4D7F81) = 0;
+
 
 	// Disable ptrace checks
-	kernel_ptr[0xAC2F1] = 0xEB;
-	*(uint16_t*)&kernel_ptr[0xAC6A2] = 0x27EB;
+	*(uint32_t*)&kernel_ptr[0x17D2EE] = 0x90909090;
+	*(uint16_t*)&kernel_ptr[0x17D2F2] = 0x9090;
 
-	// Disable process aslr
-	*(uint16_t*)&kernel_ptr[0x2862D6] = 0x9090;
-
-	// allow system level debugging
-	*(char *)(kernel_base + 0x36057b) = 0;	
+	// verbose panic patch
+	*(uint32_t*)&kernel_ptr[0x3DBDC7] = 0x90909090;
+	*(char*)&kernel_ptr[0x3DBDCB] = 0x90;
 
 	// flatz rsa check patch ;)
-    	*(uint32_t *)(kernel_base + 0x68E990) = 0x90c3c031;
+    	*(uint32_t *)(kernel_base + 0x69F4E0) = 0x90c3c031;
 
 	// flatz enable debug rifs ;)
 
-    	*(uint64_t *)(kernel_base + 0x6215B4) = 0x812EEB00000001B8;	 
+    	*(uint64_t *)(kernel_base + 0x62D30D) = 0x3D38EB00000001B8;	 
 
 	// restore write protection
 
@@ -444,7 +433,6 @@ int _main(struct thread *td)
 
 // ok now lets call the installer
 
-  initKernel();
   struct payload_info payload_info;
   payload_info.buffer = payload_data;
   payload_info.size = payload_size;
