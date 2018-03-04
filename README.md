@@ -1,8 +1,8 @@
 # PS4HEN
 PS4 Homebrew ENabler for version 4.55 based on Flatz writeup and using IDC's fake codebase
 
-You can find his codebase here https://github.com/idc/ps4-fake-455
-aswell as his method to patch shellcore here https://github.com/idc/ps4-experiments-455
+You can find his codebase here https://github.com/idc/ps4-fake-405
+aswell as his method to patch shellcore here https://github.com/idc/ps4-experiments-405
 
 to make, do as follows in your terminal:
 
