@@ -384,6 +384,8 @@ int kpayload(struct thread *td){
 	*(uint32_t *)(kernel_base + 0x4D70F7) = 0;
 	*(uint32_t *)(kernel_base + 0x4D7F81) = 0;
 
+	 //kern_sdk_vesion spoofer from lightning mods :)
+	*(uint32_t *)(kernel_base + 0x144B600) = 0x5050001;
 
 	// Disable ptrace checks
 	*(uint32_t*)&kernel_ptr[0x17D2EE] = 0x90909090;
