@@ -21,3 +21,11 @@ To Do:
 
 	make and automation script to do the above for you lol
 	
+# Credits
+Thanks to these devs in helping in the process
+
+flat_z
+idc
+zecoxao
+psxdev
+	
