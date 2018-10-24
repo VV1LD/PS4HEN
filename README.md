@@ -24,8 +24,8 @@ To Do:
 # Credits
 Thanks to these devs in helping in the process
 
-flat_z
-idc
-zecoxao
-psxdev
+flat_z<br/>
+idc<br/>
+zecoxao<br/>
+psxdev<br/>
 	
